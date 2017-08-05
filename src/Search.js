@@ -16,24 +16,53 @@ class Search extends React.Component{
     }
 
     handleCategoryChange (bookId,newCategory) {
-        // this.props.onBookCategoryChange(newCategory, bookId);
-
         this.props.onBookCategoryChange(bookId,newCategory);
     }
-
 
     searchBooks = (query, maxResults) => {
 
         let onSearchResults = this.props.onSearchResults;
 
-        BooksAPI.search(query, maxResults).then((function (books) {
-            books === undefined && onSearchResults({bookResults: []})
-            query.length > 0 && (
-                books.error ?
-                    (onSearchResults({bookResults: []})) :
-                    (onSearchResults({bookResults: books}))
-            )
-        }));
+        // BooksAPI.search(query, maxResults).then((function (books) {
+        //     books === undefined && onSearchResults({bookResults: []})
+        //     query.length > 0 && (
+        //         books.error ?
+        //             (onSearchResults({bookResults: []})) :
+        //             (onSearchResults({bookResults: books}))
+        //     )
+        // }));
+
+        BooksAPI.search(query, maxResults)
+            .then((response) => {
+
+                // Catch API response errors
+                if (!query.length || typeof response === 'undefined' || response.error) {
+                    onSearchResults({bookResults: []});
+
+                } else {
+
+                    // Set all the books from the search to have default shelf of 'none'
+                    response = response.map(b => {
+                        b.shelf = 'none';
+                        return b
+                    });
+
+                    // Check the books in the main page and set the shelf
+                    for (let book of this.props.books) {
+                        response = response.map(b => {
+                            if (book.id === b.id) {
+                                b.shelf = book.shelf
+                            }
+                            return b
+                        });
+                    }
+
+                    // Finally set the state on the search results
+                    onSearchResults({bookResults: response})
+                }
+            });
+
+
     };
 
     handleSearch(event)  {
@@ -45,7 +74,6 @@ class Search extends React.Component{
 
             <div className="search-books">
                 <div className="search-books-bar">
-                    {/*<a className="close-search" onClick={() => this.setState({ showSearchPage: false })}>Close</a>*/}
 
                     <Link to='/' className="close-search">
                         Close
@@ -63,14 +91,10 @@ class Search extends React.Component{
                     </div>
                 </div>
 
-
-
             <div className="search-books-results">
                 <ol className="books-grid">
 
                     { this.props.bookResults.map(function (book) {
-
-
                         return (
                             <li key={book.id}>
                                 <Book
@@ -85,9 +109,6 @@ class Search extends React.Component{
              </ol>
             </div>
             </div>
-
-
-
 
         )
     }

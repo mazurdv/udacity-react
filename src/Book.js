@@ -23,6 +23,11 @@ class Book extends React.Component {
 
         let book = this.props.bookInfo;
 
+        let url, imageUrl;
+
+        url = book.imageLinks ? book.imageLinks.smallThumbnail : "''";
+        imageUrl = "url('" + url + "')";
+
         return (
 
             <div className="book">
@@ -31,7 +36,7 @@ class Book extends React.Component {
                     <div className="book-cover"
                          style={{width: 128,
                                 height: 193,
-                                backgroundImage: 'url(' + book.imageLinks.smallThumbnail + ')'}}>
+                                backgroundImage: imageUrl }}>
                     </div>
 
                     <div className="book-shelf-changer">
@@ -56,7 +61,7 @@ class Book extends React.Component {
                 </div>
 
                 <div className="book-authors">
-                    {book.authors.join(', ')}
+                    {book.authors && book.authors.join(', ')}
                 </div>
 
             </div>
