@@ -6,3 +6,6 @@ npm install
 
 npm start
 
+## Allowed Search Terms
+
+See Search_Terms.md file for more information
